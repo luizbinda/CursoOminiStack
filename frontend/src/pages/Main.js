@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import api from '../services/api';
+import io from 'socket.io-client';
 
 
 import logo from '../assets/logo.svg';
@@ -8,6 +9,7 @@ import dislike from '../assets/dislike.svg';
 import './Main.css';
 
 import { Link } from 'react-router-dom';
+import { Socket } from 'dgram';
 
 
 export default function Main({match}){
@@ -26,6 +28,16 @@ export default function Main({match}){
         }
         loadUser();
     }, [match.params.id])
+
+    useEffect(() => {
+       const socket = io('http://192.168.0.107:3333',{
+           query: { user : match.params.id}
+       });
+       socket.on('match', dev =>{
+           console.log(dev);
+       })
+
+    },[match.params.id])
 
     async function handleLike(id){
         await api.post(`/devs/${id}/likes`, null, {
